@@ -13,6 +13,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
+  function checkURLInputValidation(url_image : string) {
+    let CheckPatterns = new RegExp('^(https?:\\/\\/)?'+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+'(\\?[;&a-z\\d%_.~+=-]*)?'+'(\\#[-a-z\\d_]*)?$','i');
+    return !!CheckPatterns.test(url_image);
+  }
+
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
@@ -30,6 +36,29 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
+
+  app.get("/filteredimage/", async(req, res)=> {
+    //const inputURL =  req.params.image_url;
+    let currentImagefile,[] = "";
+    const inputURL = 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg';
+
+    const validImageUrl = checkURLInputValidation(inputURL);//Validate the url input by calling this function
+
+    if(validImageUrl){
+      //return res.status(401).send("URl input should not be Empty or Invalid");
+      const outpath = await ( filterImageFromURL(inputURL));
+      currentImagefile= outpath;
+      res.status(200).sendFile(outpath);
+      //Delete file from disk after some time
+      setTimeout(()=>{
+        deleteLocalFiles([outpath]);
+      },7000)
+    }
+    else{
+      return res.status(400).send("Invalid URL");
+    }
+
+  });
   
   // Root Endpoint
   // Displays a simple message to the user
