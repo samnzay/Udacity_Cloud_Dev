@@ -45,7 +45,7 @@ const upload = multer({dest: 'src/tmp/uploads'});
 
   app.get("/filteredimage", async(req, res)=>{
 
-    let { inputURL }= req.query.image_url;
+    const inputURL= req.query.image_url;
 
     const validImageUrl = checkURLInputValidation(inputURL);//Validate url input first
 
@@ -99,7 +99,7 @@ const upload = multer({dest: 'src/tmp/uploads'});
         .greyscale() // set greyscale
         .print(addfont, 0,0, "Samuel N. Image Upload")//add some Text
         .write(__dirname + outpath, (img)=>{
-          return res.download(__dirname + outpath, //download processed Image
+          return res.status(200).download(__dirname + outpath, //download processed Image
             ()=> deleteLocalFiles([__dirname + outpath, uploadpath])//Delete Processed Image, and Original Upload Path
             
             );
