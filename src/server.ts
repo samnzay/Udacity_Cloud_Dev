@@ -43,6 +43,9 @@ const upload = multer({dest: 'src/tmp/uploads'});
 
   //! END @TODO1
 
+
+ //FILTER IMAGE FROM PUBLIC URL
+ //=============STARTS=========
   app.get("/filteredimage", async(req, res)=>{
 
     const inputURL= req.query.image_url;
@@ -66,7 +69,7 @@ const upload = multer({dest: 'src/tmp/uploads'});
   //==============STARTS===========
   app.post("/filteredimage/upload", upload.single('file'), async(req, res)=>{
 
-    //File Image validations
+    //File Image validations /Reference from www.stackoverflow.com, 
     const imageFile= req.file;
     const maxfilesize = 8;//limit to 8MB file size
     const allowedfiles= ['jpeg','jpg', 'png', 'gif'];
@@ -75,7 +78,6 @@ const upload = multer({dest: 'src/tmp/uploads'});
     const imageFileExtension = imageFile.originalname.slice(
       ((imageFile.originalname.lastIndexOf('.')-1 ) >>> 0) + 2
     );
-
     if(!allowedfiles.includes(imageFileExtension) || !imagetypesAllowed.includes(imageFile.mimetype)){
 
       throw Error('Uploaded file is not Valid. Use allowed Image format');
