@@ -21,7 +21,7 @@ export async function filterImageFromURL(inputURL: string): Promise<string> {
         method: 'get',
         url: inputURL,
         responseType: 'arraybuffer'
-      })
+      });
       const photo = await Jimp.read(imageFetch.data);
       
       const outpath =

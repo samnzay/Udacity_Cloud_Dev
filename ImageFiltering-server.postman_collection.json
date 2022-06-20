@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "/filteredimage/:image_url/",
+			"name": "/filteredimage?image_url",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -49,7 +49,7 @@
 			"response": []
 		},
 		{
-			"name": "Fimage Upload foFiltering",
+			"name": "/filteredimage/upload",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -92,12 +92,12 @@
 	"variable": [
 		{
 			"key": "host",
-			"value": "http://localhost:8082",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "image_url",
-			"value": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg",
+			"value": "",
 			"type": "string"
 		},
 		{
