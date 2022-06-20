@@ -43,6 +43,9 @@ const upload = multer({dest: 'src/tmp/uploads'});
 
   //! END @TODO1
 
+
+ //FILTER IMAGE FROM PUBLIC URL
+ //=============STARTS=========
   app.get("/filteredimage", async(req, res)=>{
 
     const inputURL= req.query.image_url;
