@@ -18,7 +18,8 @@ const upload = multer({dest: 'src/tmp/uploads'});
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true }));
 
-//URL Validation reference from www.stackoverflow.com
+//URL Validation reference 
+//Reference and Attr www.stackoverflow.com: https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
   function checkURLInputValidation(url_image : string) {
     let CheckPatterns = new RegExp('^(https?:\\/\\/)?'+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+'(\\?[;&a-z\\d%_.~+=-]*)?'+'(\\#[-a-z\\d_]*)?$','i');
@@ -69,7 +70,8 @@ const upload = multer({dest: 'src/tmp/uploads'});
   //==============STARTS===========
   app.post("/filteredimage/upload", upload.single('file'), async(req, res)=>{
 
-    //File Image validations /Reference from www.stackoverflow.com, 
+    //File Image validations 
+    //Reference & Attr: https://dev.to/thesameeric/how-to-validate-uploaded-files-in-node-js-2dc4 
     const imageFile= req.file;
     const maxfilesize = 8;//limit to 8MB file size
     const allowedfiles= ['jpeg','jpg', 'png', 'gif'];
