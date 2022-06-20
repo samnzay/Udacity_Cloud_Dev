@@ -1,4 +1,5 @@
 import express from 'express';
+import { Router, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -10,9 +11,11 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Set the network port
   const port = process.env.PORT || 8082;
   
+
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
+//URL Validation reference from www.stackoverflow.com
   function checkURLInputValidation(url_image : string) {
     let CheckPatterns = new RegExp('^(https?:\\/\\/)?'+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+'(\\?[;&a-z\\d%_.~+=-]*)?'+'(\\#[-a-z\\d_]*)?$','i');
@@ -37,36 +40,37 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
 
-  app.get("/filteredimage/", async(req, res)=> {
-    //const inputURL =  req.params.image_url;
-    let currentImagefile,[] = "";
-    const inputURL = 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg';
+  app.get("/filteredimage", async(req, res)=>{
 
-    const validImageUrl = checkURLInputValidation(inputURL);//Validate the url input by calling this function
+    let inputURL= req.query.image_url;
+
+    const validImageUrl = checkURLInputValidation(inputURL);//Validate url input first
 
     if(validImageUrl){
-      //return res.status(401).send("URl input should not be Empty or Invalid");
       const outpath = await ( filterImageFromURL(inputURL));
-      currentImagefile= outpath;
-      res.status(200).sendFile(outpath);
-      //Delete file from disk after some time
-      setTimeout(()=>{
+
+      res.status(200).sendFile(outpath,//Send Image after processing
+        ()=> deleteLocalFiles([outpath]));//Delete image from disk
+
+      //ALTERNATIVELY...
+      /*setTimeout(()=>{
         deleteLocalFiles([outpath]);
       },7000)
+      */
     }
     else{
-      return res.status(400).send("Invalid URL");
+      return res.status(400).send("Invalid URL: " + inputURL );//return error when url is invalid
     }
 
   });
   
-  // Root Endpoint
+      // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
-  
 
+  
   // Start the Server
   app.listen( port, () => {
       console.log( `server running http://localhost:${ port }` );
