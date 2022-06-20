@@ -1,7 +1,10 @@
 import express from 'express';
-import { Router, Request, Response } from 'express';
+import Jimp = require("jimp");
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+
+const multer = require('multer');
+const upload = multer({dest: 'src/tmp/uploads'});
 
 (async () => {
 
@@ -11,9 +14,9 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Set the network port
   const port = process.env.PORT || 8082;
   
-
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true }));
 
 //URL Validation reference from www.stackoverflow.com
   function checkURLInputValidation(url_image : string) {
@@ -42,7 +45,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   app.get("/filteredimage", async(req, res)=>{
 
-    let inputURL= req.query.image_url;
+    let { inputURL }= req.query.image_url;
 
     const validImageUrl = checkURLInputValidation(inputURL);//Validate url input first
 
@@ -51,18 +54,66 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
       res.status(200).sendFile(outpath,//Send Image after processing
         ()=> deleteLocalFiles([outpath]));//Delete image from disk
-
-      //ALTERNATIVELY...
-      /*setTimeout(()=>{
-        deleteLocalFiles([outpath]);
-      },7000)
-      */
     }
     else{
       return res.status(400).send("Invalid URL: " + inputURL );//return error when url is invalid
     }
 
   });
+
+
+  //FILTER IMAGE FROM DIRECT UPLOAD
+  //==============STARTS===========
+  app.post("/filteredimage/upload", upload.single('file'), async(req, res)=>{
+
+    //File Image validations
+    const imageFile= req.file;
+    const maxfilesize = 8;//limit to 8MB file size
+    const allowedfiles= ['jpeg','jpg', 'png', 'gif'];
+    const imagetypesAllowed = ['image/jpg', 'image/gif', 'image/png', 'image/jpeg'];
+
+    const imageFileExtension = imageFile.originalname.slice(
+      ((imageFile.originalname.lastIndexOf('.')-1 ) >>> 0) + 2
+    );
+
+    if(!allowedfiles.includes(imageFileExtension) || !imagetypesAllowed.includes(imageFile.mimetype)){
+
+      throw Error('Uploaded file is not Valid. Use allowed Image format');
+
+    }
+    if((imageFile.size/ (1024 * 1024)> maxfilesize)){
+
+      throw Error('File Size is too large, Upload only files below 4M');
+    }
+
+    //FILTER THE UPLOADED IMAGE
+    const imageUpload = imageFile;
+    try {
+      const photo = await Jimp.read(imageUpload.path);
+      const outpath = "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+      const uploadpath =  imageUpload.path;
+      const addfont = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);  //Add Font
+      await photo
+        .resize(256, 256) // resize
+        .quality(60) // set JPEG quality
+        .greyscale() // set greyscale
+        .print(addfont, 0,0, "Samuel N. Image Upload")//add some Text
+        .write(__dirname + outpath, (img)=>{
+          return res.download(__dirname + outpath, //download processed Image
+            ()=> deleteLocalFiles([__dirname + outpath, uploadpath])//Delete Processed Image, and Original Upload Path
+            
+            );
+        });
+
+        //return res.send('Processing Success')
+    } catch (error) {
+
+      return res.status(500).send("Sorry Something Went wrong with Image Processing");
+    
+    }
+  })
+  //FILTER IMAGE FROM DIRECT UPLOAD
+  //============ENDS===============
   
       // Root Endpoint
   // Displays a simple message to the user
