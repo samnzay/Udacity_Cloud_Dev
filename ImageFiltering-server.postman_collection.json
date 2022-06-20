@@ -1,0 +1,109 @@
+{
+	"info": {
+		"_postman_id": "ca2276ec-6231-4b29-93eb-2c1ca22d9622",
+		"name": "ImageFiltering-server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21239497"
+	},
+	"item": [
+		{
+			"name": "/filteredimage/:image_url/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{Port}}/filteredimage/https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{Port}}",
+					"path": [
+						"filteredimage",
+						"https:",
+						"",
+						"upload.wikimedia.org",
+						"wikipedia",
+						"commons",
+						"b",
+						"bd",
+						"Golden_tabby_and_white_kitten_n01.jpg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fimage Upload foFiltering",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}//filteredimage/upload/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"",
+						"filteredimage",
+						"upload",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "image_url",
+			"value": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg",
+			"type": "string"
+		},
+		{
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

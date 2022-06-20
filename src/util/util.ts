@@ -26,10 +26,12 @@ export async function filterImageFromURL(inputURL: string): Promise<string> {
       
       const outpath =
         "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+      const addfont = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);  //Add Font
       await photo
         .resize(256, 256) // resize
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
+        .print(addfont, 0,0, "Samuel N. Public URL")
         .write(__dirname + outpath, (img) => {
           resolve(__dirname + outpath);
         });
